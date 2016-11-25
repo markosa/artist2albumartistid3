@@ -18,7 +18,6 @@
 
 
 from os.path import isfile, join
-from mutagen.easyid3 import EasyID3
 import mutagen
 import sys, getopt, os
 
@@ -48,7 +47,7 @@ def main(argv):
         print "Error: Directory not found"
         printUsageAndExit()
 
-    files = [f for f in listdir(directory) if isfile(join(directory,f)) ]
+    files = [f for f in os.listdir(directory) if isfile(join(directory,f)) ]
 
     for f in files:
         audiofile = join(directory,f)
