@@ -20,15 +20,17 @@
 from os.path import isfile, join
 import mutagen
 import sys, getopt, os
+import fnmatch
 
 def printUsageAndExit():
-    print 'Usage: -d <dir>'
+    print 'Usage: [-r] -d <dir>'
     sys.exit(1)
 
 def main(argv):
     dir_opt = False
+    recursive_opt = False
     try:
-        opts,args = getopt.getopt(argv, "d:")
+        opts,args = getopt.getopt(argv, "rd:")
     except getopt.GetoptError:
         printUsageAndExit()
 
@@ -36,6 +38,8 @@ def main(argv):
         if opt == '-d':
             directory = arg
             dir_opt = True
+        if opt == '-r':
+            recursive_opt = True
 
     if not dir_opt:
         printUsageAndExit()
@@ -47,7 +51,14 @@ def main(argv):
         print "Error: Directory not found"
         printUsageAndExit()
 
-    files = [f for f in os.listdir(directory) if isfile(join(directory,f)) ]
+    files = []
+
+    if recursive_opt:
+        for root, dirnames, filenames in os.walk(directory):
+            for filename in fnmatch.filter(filenames, '*'):
+                files.append(os.path.join(root, filename))
+    else:
+        files = [f for f in os.listdir(directory) if isfile(join(directory,f)) ]
 
     for f in files:
         audiofile = join(directory,f)
